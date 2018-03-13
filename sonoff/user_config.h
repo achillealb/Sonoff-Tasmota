@@ -42,7 +42,7 @@
 #define PROJECT                "sonoff"          // PROJECT is used as the default topic delimiter and OTA file name
                                                  //   As an IDE restriction it needs to be the same as the main .ino file
 
-#define CFG_HOLDER             0x20161209        // [Reset 1] Change this value to load following default configuration parameters
+#define CFG_HOLDER             0x20180224        // [Reset 1] Change this value to load following default configuration parameters
 #define SAVE_DATA              1                 // [SaveData] Save changed parameters to Flash (0 = disable, 1 - 3600 seconds)
 #define SAVE_STATE             1                 // [SetOption0] Save changed power state to Flash (0 = disable, 1 = enable)
 
@@ -212,6 +212,7 @@
 //  #define USE_WS2812_DMA                         // DMA supports only GPIO03 (= Serial RXD) (+1k mem). When USE_WS2812_DMA is enabled expect Exceptions on Pow
 
 #define USE_ARILUX_RF                            // Add support for Arilux RF remote controller (+0k8 code, 252 iram (non 2.3.0))
+
 
 /*********************************************************************************************\
  * Select all sensors - overrides above undefines!!
