@@ -1,4 +1,43 @@
+## Sonoff-Tasmota (kabong version with Cover Mode)
+
+## Added Commands
+setoption22 1 turns on Cover mode
+pulsetimeN sets open/close time required for relays N and N+1
+pulsetimeX sets the gap and/or start time for movement (mine is 2 seconds), where X is the number of pairs + cover number
+NOTE: pulsetime for covers is ALWAYS seconds (and not the scale used by arendst - ie 13 is 13 seconds)
+IE for a 4CH, pulsetime1 is open/close time for first pair
+pulsetime3 is the gap/start time for first pair.
+
+so for my Dual and windw windows I have
+setoption22 1
+pulsetime1 23
+pulsetime2 2
+
+use the command
+cover X
+where X is ON, OFF or percentage open (5-100%)
+cover 0 thru 4 are reserved as follows
+0 - OFF
+1 - ON (100%)
+2 - Toggle between open/stop/close/stop (ie single switch)
+3 - immediate stop
+4 - immediate stop and set position to 0 (closed)
+NOTE: You can also use a negative offset.
+If you do it means turn off all relays and set position as absolute value
+ie cover -50 will turn off relays and state position is 50%
+NOTE: If you set STATETEXT1 to CLOSE and STATETEXT2 to OPEN, you can also use OPEN/Close as commands
+
+Any GPIO defines as a Switch will work as follows
+Switch1 Cover1 Close
+Switch2 Cover1 Open
+Switch3 Cover2 Close
+Switch4 Cover2 Open
+
+I configured, so if you hit any cover button while its moving, the moving will stop.
+
+
 ## Sonoff-Tasmota
+
 Provide ESP8266 based Sonoff by [iTead Studio](https://www.itead.cc/) and ElectroDragon IoT Relay with Serial, Web and MQTT control allowing 'Over the Air' or OTA firmware updates using Arduino IDE.
 
 Current version is **5.12.0b** - See [sonoff/_releasenotes.ino](https://github.com/arendst/Sonoff-Tasmota/blob/development/sonoff/_releasenotes.ino) for change information.
