@@ -1055,7 +1055,7 @@ void MqttDataCallback(char* topic, byte* data, unsigned int data_len)
 //        type = NULL;
 //      }
     }
-    else if ((CMND_SETOPTION == command_code) && ((index <= 22) || ((index > 31) && (index <= P_MAX_PARAM8 + 31)))) {
+    else if ((CMND_SETOPTION == command_code) && ((index <= 23) || ((index > 31) && (index <= P_MAX_PARAM8 + 31)))) {
       if (index <= 31) {
         ptype = 0;   // SetOption0 .. 31
       } else {
@@ -1069,7 +1069,6 @@ void MqttDataCallback(char* topic, byte* data, unsigned int data_len)
               case 3:   // mqtt
               case 15:  // pwm_control
               case 19:  // hass_discovery
-              case 22:  // cover mode
                 restart_flag = 2;
               case 0:   // save_state
               case 1:   // button_restrict
@@ -1086,13 +1085,15 @@ void MqttDataCallback(char* topic, byte* data, unsigned int data_len)
               case 18:  // light_signal
               case 20:  // not_power_linked
               case 21:  // no_power_on_check
+              case 22:  // cover mode
+              case 23:  // cover pulse
                 bitWrite(Settings.flag.data, index, payload);
             }
             if (12 == index) {  // stop_flash_rotate
               stop_flash_rotate = payload;
               SettingsSave(2);
             }
-            if(22 == index) {
+            if(22 == index || 23 == index) {
               SettingsSave(0);
             }
           }
@@ -1687,21 +1688,43 @@ void ExecuteCommandCover(byte cover, int16_t position)
       if (cover_direction[cover] > 0)
         device += 1;
       power_t mask = (1 << device);
-      power |= mask;
+      if (Settings.flag.cover_pulse) {
+        snprintf_P(log_data, sizeof(log_data), "Pulse On");
+        AddLog(LOG_LEVEL_DEBUG);
+        SetDevicePower(power | mask);
+        delay(250);
+      } else {
+        power |= mask;
+      }
       SetDevicePower(power);
       MqttPublishPowerState(cover + 1);
       return;
     }
     snprintf_P(log_data, sizeof(log_data), "Arrived:: %d", cover_position[cover]);
     AddLog(LOG_LEVEL_DEBUG);
+    bool pulse_stop = true;
     if (cover_position[cover] < 0 || position == POWER_BLINK_STOP)
+    {
       cover_position[cover] = 0;
-    else
-    if (cover_position[cover] > Settings.pulse_timer[cover])
+      pulse_stop = false;
+    } else
+    if (cover_position[cover] > Settings.pulse_timer[cover]){
       cover_position[cover] = Settings.pulse_timer[cover];
+      pulse_stop = false;
+    }
     pulse_timer[cover] = 0;
+    if (Settings.flag.cover_pulse && pulse_stop) {
+      snprintf_P(log_data, sizeof(log_data), "Pulse Off");
+      AddLog(LOG_LEVEL_DEBUG);
+      byte device = 2 * cover;
+      if (cover_direction[cover] > 0)
+        device += 1;
+      power_t mask = (1 << device);
+      SetDevicePower(power | mask);
+      delay(250);
+    }
     power &= (POWER_MASK ^ (3 << (cover * 2)));
-    SetDevicePower(power); 
+    SetDevicePower(power);
     MqttPublishPowerState(cover + 1);
     return;
   }
@@ -1758,10 +1781,17 @@ void ExecuteCommandCover(byte cover, int16_t position)
     return;
   }
   power_t mask = (1 << device);
-  power |= mask;
+  if (Settings.flag.cover_pulse) {
+    snprintf_P(log_data, sizeof(log_data), "Pulse On");
+    AddLog(LOG_LEVEL_DEBUG);
+    SetDevicePower(power | mask);
+    delay(250);
+  } else {
+    power |= mask;
+  }
   SetDevicePower(power);
 
-  snprintf_P(log_data, sizeof(log_data), "Pulse: %d, To:%d,From:%d,By:%d", pulse_timer[cover], position, cover_position[cover], cover_direction[cover]);
+  snprintf_P(log_data, sizeof(log_data), "Move: %d, To:%d,From:%d,By:%d", pulse_timer[cover], position, cover_position[cover], cover_direction[cover]);
   AddLog(LOG_LEVEL_DEBUG);
 }
 

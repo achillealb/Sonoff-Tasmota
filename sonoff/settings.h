@@ -48,7 +48,7 @@ typedef union {                            // Restricted by MISRA-C Rule 18.4 bu
     uint32_t not_power_linked : 1;         // bit 20 (v5.11.1f)
     uint32_t no_power_on_check : 1;        // bit 21 (v5.11.1i)
     uint32_t cover_mode : 1;               // bit 22 (kabong)
-    uint32_t spare23 : 1;
+    uint32_t cover_pulse : 1;              // bit 23 (kabong)
     uint32_t spare24 : 1;
     uint32_t spare25 : 1;
     uint32_t spare26 : 1;

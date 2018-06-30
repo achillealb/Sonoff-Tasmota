@@ -2,14 +2,20 @@
 
 ## Added Commands
 setoption22 1 turns on Cover mode
+setoption23 1 turns on momentary action
 pulsetimeN sets open/close time required for relays N and N+1
 pulsetimeX sets the gap and/or start time for movement (mine is 2 seconds), where X is the number of pairs + cover number
+
 NOTE: pulsetime for covers is ALWAYS seconds (and not the scale used by arendst - ie 13 is 13 seconds)
 IE for a 4CH, pulsetime1 is open/close time for first pair
 pulsetime3 is the gap/start time for first pair.
 
+setoption23 causes the relays act as momentary action switches and toggled for 250ms at start and end of travel time, instead of on for entire movement time
+Except when moving to 0 or 100 (Open or Closed) when only the first toggle occurs and the second ignored
+
 so for my Dual and windw windows I have
 setoption22 1
+setoption23 0
 pulsetime1 23
 pulsetime2 2
 
